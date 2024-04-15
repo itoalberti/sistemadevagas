@@ -1,6 +1,4 @@
 import conectar from '../Persistencia/Conexao.js';
-import ClienteBD from '../Persistencia/ClienteBD.js';
-import VagaBD from '../Persistencia/VagaBD.js';
 
 export default class Vaga {
   #vaga_codigo;
@@ -57,11 +55,11 @@ export default class Vaga {
 
   toJSON() {
     return {
-      vaga_codigo: this.#vaga_codigo,
-      vaga_cargo: this.#vaga_cargo,
-      vaga_salario: this.#vaga_salario,
-      vaga_cidade: this.#vaga_cidade,
-      vaga_qtd: this.#vaga_qtd,
+      vaga_codigo: this.vaga_codigo,
+      vaga_cargo: this.vaga_cargo,
+      vaga_salario: this.vaga_salario,
+      vaga_cidade: this.vaga_cidade,
+      vaga_qtd: this.vaga_qtd,
     };
   }
 
@@ -78,18 +76,17 @@ export default class Vaga {
         listaVagas.push(vaga);
       }
       return listaVagas;
+    } else {
+      const conexao = await conectar();
+      const sql = 'SELECT * FROM Vaga WHERE vaga_codigo=?';
+      const parametros = [vaga_codigo];
+      const [rows] = await conexao.query(sql, parametros);
+      const listaVagas = [];
+      for (const row of rows) {
+        const vaga = new Vaga(row['vaga_codigo'], row['vaga_cargo'], row['vaga_salario'], row['vaga_cidade'], row['vaga_qtd']);
+        listaVagas.push(vaga);
+      }
+      return listaVagas[0];
     }
-    // else {
-    //   const conexao = await conectar();
-    //   const sql = 'SELECT * FROM Vaga WHERE cod_cli=?';
-    //   const parametros = [cod_cli];
-    //   const [rows] = await conexao.query(sql, parametros);
-    //   const listaClientes = [];
-    //   for (const row of rows) {
-    //     const cliente = new Vaga(row['cod_cli'], row['nome'], row['cpf'], row['dataNasc'], row['email'], row['telefone'], row['endereco'], row['cidade'], row['uf'], row['cod_ag']);
-    //     listaClientes.push(cliente);
-    //   }
-    //   return listaClientes[0];
-    // }
   }
 }

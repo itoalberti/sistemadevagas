@@ -1,5 +1,4 @@
 import conectar from '../Persistencia/Conexao.js';
-import CandidatoBD from '../Persistencia/CandidatoBD.js';
 
 export default class Candidato {
   #cand_cpf;

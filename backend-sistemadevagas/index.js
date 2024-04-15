@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import rotaCandidato from './Rotas/rotaCliente.js';
-import rotaVaga from './Rotas/rotaProduto.js';
+
+import rotaCandidato from './Rotas/rotaCandidato.js';
+import rotaVaga from './Rotas/rotaVaga.js';
 
 const app = express();
 app.use(cors());
@@ -13,7 +14,6 @@ app.use('/vaga', rotaVaga);
 
 const hostname = '0.0.0.0';
 const port = 4000;
-// const port = 3306;
 
 app.listen(port, hostname, () => {
   console.log(`Backend ouvindo em http://${hostname}:${port}`);

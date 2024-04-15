@@ -1,83 +1,78 @@
-import { Button, Col, Container, Form, Row, Table } from 'react-bootstrap';
-import Pagina from '../templates/Pagina';
+import { Button, Container, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { useState } from 'react';
-import { hostname, port } from '../dados/dados';
-import listaClientes from '../dados/mockClientes';
+import { useEffect, useState } from 'react';
 
-const urlCliente = `http://${hostname}:${port}/cliente`;
+import Pagina from '../templates/Pagina';
+import { urlCandidato } from '../dados/dados';
 
-export default function TabelaCandidatos(props) {
-  const [clientes, setClientes] = useState([]);
+export default function TabelaCandidatos(candidato) {
+  // Função para buscar as vagas às quais aquele candidato se candidatou e exibir os seus cargos em um alerta:
+  const buscarVagasDoCandidato = async (cand_cpf) => {
+    // IMPLEMENTAR ESTA FUNÇÃO
+  };
+
+  // Código para recuperar a lista de candidatos (useState e useEffect)
+  const [listaCandidatos, setListaCandidatos] = useState([]);
+  useEffect(() => {
+    fetch(urlCandidato)
+      .then((resp) => resp.json())
+      .then((data) => {
+        setListaCandidatos(data);
+      })
+      .catch((erro) => console.error('Erro ao buscar candidatos', erro));
+  }, []);
 
   return (
     <Pagina>
       <Container>
         <br />
+        <h4>CANDIDATOS CADASTRADOS</h4>
         <Table striped bordered hover variant='dark'>
           <thead>
             <tr>
-              <th style={{ width: '5%' }}>Conta</th>
-              <th style={{ width: '5%' }}>Agência</th>
-              <th style={{ width: '20%' }}>Nome</th>
-              <th style={{ width: '10%' }}>CPF</th>
-              <th style={{ width: '5%' }}>Data de nascimento</th>
-              <th style={{ width: '15%' }}>Endereço</th>
-              <th style={{ width: '10%' }}>Cidade</th>
-              <th style={{ width: '2%' }}>UF</th>
-              <th style={{ width: '10%' }}>Email</th>
-              <th style={{ width: '5%' }}>Telefone</th>
-              <th style={{ width: '15%' }}>Ações</th>
+              <th style={{ width: '15%' }}>CPF</th>
+              <th style={{ width: '25%' }}>Nome</th>
+              <th style={{ width: '25%' }}>Endereço</th>
+              <th style={{ width: '15%' }}>Telefone</th>
+              {/* Ações: Candidatar-se a vagas e mostrar vagas às quais já se candidatou */}
+              <th style={{ width: '20%' }}>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {/* ? →  método map só será chamado se listaClientes for um atributo válido */}
-            {listaClientes?.map((cliente) => {
+            {listaCandidatos?.map((candidato) => {
               return (
                 //   necessário identificar cada linha da tabela usando "key"
                 // key → ajuda o React na rendereização dos componentes no DOM virtual
-                <tr key={cliente.cpf}>
-                  <td>{cliente.cod_cli}</td>
-                  <td>{cliente.cod_ag}</td>
-                  <td>{cliente.nome}</td>
-                  <td>{cliente.cpf}</td>
-                  <td>{cliente.dataNasc}</td>
-                  <td>{cliente.endereco}</td>
-                  <td>{cliente.cidade}</td>
-                  <td>{cliente.uf}</td>
-                  <td>{cliente.email}</td>
-                  <td>{cliente.telefone}</td>
+                <tr key={candidato.cand_cpf}>
+                  <td>{candidato.cand_cpf}</td>
+                  <td>{candidato.cand_nome}</td>
+                  <td>{candidato.cand_endereco}</td>
+                  <td>{candidato.cand_telefone}</td>
                   <td>
-                    <Button variant='outline-warning'>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='16'
-                        height='16'
-                        fill='currentColor'
-                        class='bi bi-pencil'
-                        viewBox='0 0 16 16'
+                    <cell style={{ paddingRight: '10px' }}>
+                      {/* EXIBIR VAGAS DO CANDIDATO */}
+                      <Button variant='primary' onClick={buscarVagasDoCandidato}>
+                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-list-ol' viewBox='0 0 16 16'>
+                          <path fill-rule='evenodd' d='M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5' />
+                          <path d='M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z' />
+                        </svg>
+                      </Button>
+                    </cell>
+                    <cell>
+                      {/* CANDIDATAR-SE A VAGAS */}
+                      <Button
+                        variant='secondary'
+                        style={{ marginRight: '5px' }}
                         onClick={() => {
-                          console.log('EDITAR CLIENTE');
+                          // IMPLEMENTAR FUNÇÃO DE CADASTRAR CANDIDATO EM VAGA
                         }}
                       >
-                        <path d='M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325' />
-                      </svg>
-                    </Button>
-                    <Button variant='outline-danger'>
-                      <svg
-                        xmlns='http://www.w3.org/2000/svg'
-                        width='16'
-                        height='16'
-                        fill='currentColor'
-                        class='bi bi-trash3'
-                        viewBox='0 0 16 16'
-                        onClick={() => {
-                          console.log('EXCLUIR CLIENTE');
-                        }}
-                      >
-                        <path d='M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5' />
-                      </svg>
-                    </Button>
+                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-square' viewBox='0 0 16 16'>
+                          <path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z' />
+                          <path fill-rule='evenodd' d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z' />
+                        </svg>
+                      </Button>
+                    </cell>
                   </td>
                 </tr>
               );

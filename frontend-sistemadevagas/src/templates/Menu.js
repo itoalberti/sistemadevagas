@@ -1,4 +1,4 @@
-import { Container, Nav, NavDropdown, Navbar } from 'react-bootstrap';
+import { Button, Container, Nav, Navbar } from 'react-bootstrap';
 
 export default function Menu() {
   return (
@@ -6,16 +6,16 @@ export default function Menu() {
       <Container className='m-0'>
         <Navbar.Brand href='/'>HOME</Navbar.Brand>
         <Navbar.Toggle aria-controls='basic-navbar-nav' />
-        <Navbar.Collapse id='basic-navbar-nav'>
-          <Nav className='me-auto'>
+        <Navbar.Collapse id='basic-navbar-nav' className='justify-content-left'>
+          <Nav>
             {/* -----------EXIBIR CANDIDATOS----------- */}
-            <NavDropdown title='EXIBIR CANDIDATOS' id='basic-nav-dropdown'>
-              <NavDropdown.Item href='/exibircandidatos'>Exibir agências</NavDropdown.Item>
-            </NavDropdown>
+            <Button className='m-2' variant='primary' href='/exibircandidatos'>
+              EXIBIR CANDIDATOS
+            </Button>
             {/* -----------EXIBIR VAGAS----------- */}
-            <NavDropdown title='EXIBIR VAGAS' id='basic-nav-dropdown'>
-              <NavDropdown.Item href='/exibirvagas'>Exibir clientes</NavDropdown.Item>
-            </NavDropdown>
+            <Button className='m-2' variant='primary' href='/exibirvagas'>
+              EXIBIR VAGAS
+            </Button>
           </Nav>
         </Navbar.Collapse>
       </Container>

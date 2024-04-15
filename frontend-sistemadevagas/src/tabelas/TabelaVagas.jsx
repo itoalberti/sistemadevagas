@@ -1,75 +1,78 @@
 import { Button, Container, Table } from 'react-bootstrap';
-import Pagina from '../templates/Pagina';
 import { LinkContainer } from 'react-router-bootstrap';
-import { useState } from 'react';
-import { hostname, port } from '../dados/dados';
-import mockAgencias from '../dados/mockAgencias';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
-export default function TelaExibirVagas(props) {
-  const [vagas, setVagas] = useState([]);
-  const [selecionado, setSelecionado] = useState([]);
+import Pagina from '../templates/Pagina';
+import { urlVaga } from '../dados/dados';
 
-  // let navigate = useNavigate();
-  // const routeChange = () => {
-  //   let path = `newPath`;
-  //   navigate(path);
-  // };
+export default function TabelaVagas({ vaga }) {
+  const navigate = useNavigate();
+  const exibeCandidatosDaVaga = () => {
+    navigate.push(`/tabelaCandidatosDaVaga/${vaga.vaga_codigo}`);
+  };
+
+  // Código para recuperar a lista de vagas (useState e useEffect)
+  const [listaVagas, setListaVagas] = useState([]);
+  useEffect(() => {
+    fetch(urlVaga)
+      .then((resp) => resp.json())
+      .then((data) => {
+        setListaVagas(data);
+      })
+      .catch((erro) => console.error('Erro ao buscar vagas', erro));
+  }, []);
 
   return (
     <Pagina>
       <Container>
         <br />
+        <h4>VAGAS DISPONÍVEIS</h4>
         <Table striped bordered hover variant='dark'>
           <thead>
             <tr>
-              <th style={{ width: '15%' }}>Código da agência</th>
-              <th style={{ width: '30%' }}>Endereço</th>
-              <th style={{ width: '15%' }}>Cidade</th>
-              <th style={{ width: '15%' }}>UF</th>
-              <th style={{ width: '15%' }}>Ações</th>
+              <th style={{ width: '10%' }}>Código</th>
+              <th style={{ width: '20%' }}>Cargo</th>
+              <th style={{ width: '10%' }}>Salário</th>
+              <th style={{ width: '20%' }}>Cidade</th>
+              <th style={{ width: '20%' }}>Quantidade de vagas</th>
+              <th style={{ width: '10%' }}>Ações</th>
             </tr>
           </thead>
           <tbody>
             {/* ? →  método map só será chamado se listaClientes for um atributo válido */}
-            {mockAgencias?.map((agencia) => {
+            {listaVagas?.map((vaga) => {
               return (
                 //   necessário identificar cada linha da tabela usando "key"
                 // key → ajuda o React na rendereização dos componentes no DOM virtual
-                <tr key={agencia.cod_ag}>
-                  <td>{agencia.cod_ag}</td>
-                  <td>{agencia.endereco}</td>
-                  <td>{agencia.cidade}</td>
-                  <td>{agencia.uf}</td>
+                <tr key={vaga.vaga_codigo}>
+                  <td>{vaga.vaga_codigo}</td>
+                  <td>{vaga.vaga_cargo}</td>
+                  <td>R$ {vaga.vaga_salario}</td>
+                  <td>{vaga.vaga_cidade}</td>
+                  <td>{vaga.vaga_qtd}</td>
                   <td>
                     <cell style={{ paddingRight: '10px' }}>
+                      {/* EXIBIR CANDIDATOS A ESTA VAGA */}
+                      <Button variant='primary' onClick={exibeCandidatosDaVaga}>
+                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-list-ol' viewBox='0 0 16 16'>
+                          <path fill-rule='evenodd' d='M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5' />
+                          <path d='M1.713 11.865v-.474H2c.217 0 .363-.137.363-.317 0-.185-.158-.31-.361-.31-.223 0-.367.152-.373.31h-.59c.016-.467.373-.787.986-.787.588-.002.954.291.957.703a.595.595 0 0 1-.492.594v.033a.615.615 0 0 1 .569.631c.003.533-.502.8-1.051.8-.656 0-1-.37-1.008-.794h.582c.008.178.186.306.422.309.254 0 .424-.145.422-.35-.002-.195-.155-.348-.414-.348h-.3zm-.004-4.699h-.604v-.035c0-.408.295-.844.958-.844.583 0 .96.326.96.756 0 .389-.257.617-.476.848l-.537.572v.03h1.054V9H1.143v-.395l.957-.99c.138-.142.293-.304.293-.508 0-.18-.147-.32-.342-.32a.33.33 0 0 0-.342.338zM2.564 5h-.635V2.924h-.031l-.598.42v-.567l.629-.443h.635z' />
+                        </svg>
+                      </Button>
+                    </cell>
+                    <cell>
+                      {/* REGISTRAR CANDIDATO NESTA VAGA */}
                       <Button
                         variant='primary'
                         style={{ marginRight: '5px' }}
                         onClick={() => {
-                          props.alterarAgencia(agencia);
+                          console.log('REGISTRAR CANDIDATO NA VAGA');
                         }}
                       >
                         <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-square' viewBox='0 0 16 16'>
                           <path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z' />
                           <path fill-rule='evenodd' d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z' />
-                        </svg>
-                      </Button>
-                    </cell>
-                    <cell>
-                      <Button variant='outline-danger'>
-                        <svg
-                          xmlns='http://www.w3.org/2000/svg'
-                          width='16'
-                          height='16'
-                          fill='currentColor'
-                          class='bi bi-trash3'
-                          viewBox='0 0 16 16'
-                          onClick={() => {
-                            props.excluir(agencia);
-                          }}
-                        >
-                          <path d='M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5' />
                         </svg>
                       </Button>
                     </cell>
@@ -86,192 +89,3 @@ export default function TelaExibirVagas(props) {
     </Pagina>
   );
 }
-
-// function buscarAgencias() {
-//   fetch('https://localhost:3000/consultaragencias', { method: 'GET' })
-//     .then((resp) => resp.json)
-//     .then((retorno) => {
-//       if (retorno.status) {
-//         setAgencias(retorno.listaAgencias);
-//       } else {
-//         setAgencias([
-//           {
-//             id: 0,
-//           },
-//         ]);
-//       }
-//     });
-//   setAgencias();
-// }
-
-// // ************************************************  BACKUP  ************************************************
-// export default function TelaExibirAgencias(props) {
-//   const [exibirTabela, setExibirTabela] = useState(true);
-//   const [listaAgencias, setListaAgencias] = useState([]);
-//   const [atualizar, setAtualizar] = useState(false);
-//   const [agencia, setAgencia] = useState({
-//     cod_ag: 0,
-//     endereco: '',
-//     cidade: '',
-//     uf: '',
-//   });
-
-//   // ------------------------------------LISTAR AGÊNCIAS------------------------------------
-//   async function listarAgencias() {
-//     await fetch(urlAgencia, { method: 'GET' })
-//       .then((resp) => resp.json())
-//       .then((output) => {
-//         if (output.status) {
-//           setListaAgencias(output.listaAgencias);
-//         } else {
-//           alert(output.msg);
-//         }
-//       })
-//       .catch((erro) => {
-//         alert(`Erro: ${erro.message}`);
-//       });
-//   }
-//   useEffect(() => {
-//     if (exibirTabela) listarAgencias();
-//   }, [exibirTabela]);
-
-//   // ------------------------------------CADASTRAR AGÊNCIA------------------------------------
-//   async function cadastrarAgencia(agencia) {
-//     if (!atualizando) {
-//       await fetch(urlCliente, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(cliente),
-//       })
-//         .then((resposta) => resposta.json())
-//         .then((retorno) => {
-//           if (retorno.status) {
-//             alert(retorno.mensagem + ' Código do cliente: ' + retorno.codigoGerado);
-//           } else {
-//             alert(retorno.mensagem);
-//           }
-//         })
-//         .catch((erro) => {
-//           alert('Erro: ' + erro.message);
-//         });
-//     } else {
-//       await fetch(urlCliente, {
-//         method: 'PUT',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(cliente),
-//       })
-//         .then((resposta) => resposta.json())
-//         .then((retorno) => {
-//           if (retorno.status) {
-//             alert(retorno.mensagem);
-//           } else {
-//             alert(retorno.mensagem);
-//           }
-//         })
-//         .catch((erro) => {
-//           alert('Erro: ' + erro.message);
-//         });
-//       setAtualizando(false);
-//     }
-//     setExibirTabela(true);
-//     setClienteAtual(clienteVazio);
-//   }
-
-//   // ------------------------------------ALTERAR AGÊNCIA------------------------------------
-//   // ------------------------------------EXCLUIR AGÊNCIA------------------------------------
-
-//   return (
-//     <Pagina>
-//       <Container>
-//         {/* <Col> */}
-//         {/* <CaixaSelecao endFonteDados='https://jsonplaceholder.typicode.com/users' campoChave='id' campoExibicao='name' funcaoSelecao={setSelecionado} /> */}
-//         {/* <CaixaSelecao endFonteDados='https://localhost:3001/agencia' campoChave='cidade' campoExibicao='endereco' funcaoSelecao={setSelecionado} /> */}
-//         {/* </Col> */}
-//         <br />
-//         <Table striped bordered hover variant='dark'>
-//           <thead>
-//             <tr>
-//               <th style={{ width: '15%' }}>Código da agência</th>
-//               <th style={{ width: '30%' }}>Endereço</th>
-//               <th style={{ width: '15%' }}>Cidade</th>
-//               <th style={{ width: '15%' }}>UF</th>
-//               <th style={{ width: '15%' }}>Ações</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {/* ? →  método map só será chamado se listaClientes for um atributo válido */}
-//             {listaAgencias?.map((agencia) => {
-//               return (
-//                 //   necessário identificar cada linha da tabela usando "key"
-//                 // key → ajuda o React na rendereização dos componentes no DOM virtual
-//                 <tr key={agencia.cod_ag}>
-//                   <td>{agencia.cod_ag}</td>
-//                   <td>{agencia.endereco}</td>
-//                   <td>{agencia.cidade}</td>
-//                   <td>{agencia.uf}</td>
-//                   <td>
-//                     <cell style={{ paddingRight: '10px' }}>
-//                       <Button
-//                         variant='primary'
-//                         style={{ marginRight: '5px' }}
-//                         onClick={() => {
-//                           props.alterarAgencia(agencia);
-//                         }}
-//                       >
-//                         <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-square' viewBox='0 0 16 16'>
-//                           <path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z' />
-//                           <path fill-rule='evenodd' d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z' />
-//                         </svg>
-//                       </Button>
-//                     </cell>
-//                     <cell>
-//                       <Button variant='outline-danger'>
-//                         <svg
-//                           xmlns='http://www.w3.org/2000/svg'
-//                           width='16'
-//                           height='16'
-//                           fill='currentColor'
-//                           class='bi bi-trash3'
-//                           viewBox='0 0 16 16'
-//                           onClick={() => {
-//                             props.excluir(agencia);
-//                           }}
-//                         >
-//                           <path d='M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5' />
-//                         </svg>
-//                       </Button>
-//                     </cell>
-//                   </td>
-//                 </tr>
-//               );
-//             })}
-//           </tbody>
-//         </Table>
-//       </Container>
-//       <LinkContainer to='/'>
-//         <Button variant='dark'>Voltar</Button>
-//       </LinkContainer>
-//     </Pagina>
-//   );
-// }
-
-// // function buscarAgencias() {
-// //   fetch('https://localhost:3000/consultaragencias', { method: 'GET' })
-// //     .then((resp) => resp.json)
-// //     .then((retorno) => {
-// //       if (retorno.status) {
-// //         setAgencias(retorno.listaAgencias);
-// //       } else {
-// //         setAgencias([
-// //           {
-// //             id: 0,
-// //           },
-// //         ]);
-// //       }
-// //     });
-// //   setAgencias();
-// // }
