@@ -60,32 +60,32 @@ export default class Candidatura {
   async listarVagasDoCandidato(cand_nome) {
     if (cand_nome == undefined) {
       const conexao = await conectar();
-      const sql = 'SELECT * FROM Candidato';
-      const parametros = ['%'];
+      const sql = `SELECT * FROM Candidato_Vaga;`;
+      const parametros = [`%`];
       const [rows] = await conexao.query(sql, parametros);
-      const listaCandidatos = [];
+      const listaCandidaturas = [];
       for (const row of rows) {
-        const candidato = new Candidatura(row['cand_cpf'], row['cand_nome'], row['cand_endereco'], row['cand_telefone']);
-        listaCandidatos.push(candidato);
+        const candidatura = new Candidatura(row['data_inscricao'], row['horario_inscricao'], row['cand_cpf'], row['vaga_codigo']);
+        listaCandidaturas.push(candidatura);
       }
-      return listaCandidatos;
+      return listaCandidaturas;
     } else {
       const conexao = await conectar();
       const sql = `
-      SELECT * FROM Candidato
-      INNER JOIN Candidato_Vaga
-      ON Candidato.cand_cpf = Candidato_Vaga.cand_cpf
-      INNER JOIN Vaga
-      ON Candidato_Vaga.vaga_codigo = Vaga.vaga_codigo
-      WHERE cand_nome LIKE '?';`;
+            SELECT * FROM Candidato_Vaga
+            INNER JOIN Candidato
+            ON Candidato_Vaga.cand_cpf = Candidato.cand_cpf
+            INNER JOIN Vaga
+            ON Candidato_Vaga.vaga_codigo = Vaga.vaga_codigo
+            WHERE cand_nome LIKE '?';`;
       const parametros = ['%' + cand_nome + '%'];
       const [rows] = await conexao.query(sql, parametros);
-      const listaCandidatos = [];
+      const listaCandidaturas = [];
       for (const row of rows) {
-        const candidato = new Candidatura(row['cand_cpf'], row['cand_nome'], row['cand_endereco'], row['cand_telefone']);
-        listaCandidatos.push(candidato);
+        const candidatura = new Candidatura(row['data_inscricao'], row['horario_inscricao'], row['cand_cpf'], row['vaga_codigo']);
+        listaCandidaturas.push(candidatura);
       }
-      return listaCandidatos[0];
+      return listaCandidaturas[0];
     }
   }
 }
