@@ -15,10 +15,10 @@ function App() {
           <Route path='/' element={<TelaInicial />} />
           {/* CANDIDATOS */}
           <Route path='/exibircandidatos' element={<TabelaCandidatos />} />
-          <Route path='/tabelaCandidatosDaVaga/:vaga_codigo' element={<TabelaCandidatosDaVaga />} />
+          {/* <Route path='/tabelaCandidatosDaVaga/:vaga_codigo' element={<TabelaCandidatosDaVaga />} /> */}
+          <Route path='/tabelaCandidatosDaVaga' element={<TabelaCandidatosDaVaga />} />
           {/* VAGAS */}
           <Route path='/exibirvagas' element={<TabelaVagas />} />
-          <Route path='/tabelaVagasDoCandidato/:candidato_codigo' element={<TabelaVagas />} />
           {/* ERRO 404 */}
           <Route path='*' element={<Tela404 />} />
         </Routes>

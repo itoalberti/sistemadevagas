@@ -6,12 +6,12 @@ import Pagina from '../templates/Pagina';
 
 // TABELA QUE EXIBE OS CANDIDATOS À VAGA ESPECÍFICA
 export default function TabelaCandidatosDaVaga(vaga) {
-  const [listaCandidatos, setListaCandidatos] = useState([]);
+  const [candidatosVagas, setCandidatosVagas] = useState([]);
   useEffect(() => {
     fetch(urlCandidato)
       .then((resp) => resp.json())
       .then((data) => {
-        setListaCandidatos(data);
+        setCandidatosVagas(data);
       })
       .catch((erro) => console.error('Erro ao buscar candidatos', erro));
   }, []);
@@ -20,6 +20,7 @@ export default function TabelaCandidatosDaVaga(vaga) {
     <>
       <Pagina>
         <Container>
+          <h1>TABELA CANDIDATOS DA VAGA</h1>
           <br />
           <Table striped bordered hover variant='dark'>
             <thead>
@@ -32,7 +33,7 @@ export default function TabelaCandidatosDaVaga(vaga) {
             </thead>
             <tbody>
               {/* ? →  método map só será chamado se listaClientes for um atributo válido */}
-              {listaCandidatos?.map((candidato) => {
+              {candidatosVagas?.map((candidato) => {
                 return (
                   //   necessário identificar cada linha da tabela usando "key"
                   // key → ajuda o React na rendereização dos componentes no DOM virtual
